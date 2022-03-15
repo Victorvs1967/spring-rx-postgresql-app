@@ -21,7 +21,13 @@ public class PersonMapperImpl implements PersonMapper {
 
   @Override
   public PersonDTO toDTO(Person person) {
-    return null;
+    return PersonDTO.builder()
+      .id(person.getId())
+      .name(person.getName())
+      .email(person.getEmail())
+      .password(person.getPassword())
+      .todos(person.getTodos())
+      .build();
   }
   
 }

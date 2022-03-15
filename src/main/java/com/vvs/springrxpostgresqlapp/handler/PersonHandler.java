@@ -1,5 +1,7 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
+import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
+import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
 import com.vvs.springrxpostgresqlapp.model.Person;
 import com.vvs.springrxpostgresqlapp.service.PersonService;
 
@@ -20,6 +22,8 @@ public class PersonHandler {
 
   @Autowired
   private PersonService personService;
+  @Autowired
+  private PersonMapper personMapper;
   
   public Mono<ServerResponse> getAllPersons(ServerRequest request) {
     Flux<Person> persons = personService.getAllPersons();
@@ -42,9 +46,10 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> createPerson(ServerRequest request) {
-    Mono<Person> personMono = request.bodyToMono(Person.class);
+    Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
 
-    return personMono
+    return personDtoMono
+      .map(personMapper::fromDTO)
       .flatMap(person -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
@@ -54,10 +59,11 @@ public class PersonHandler {
 
   public Mono<ServerResponse> editPerson(ServerRequest request) {
     Long id = Long.parseLong(request.pathVariable("id"));
-    Mono<Person> personMono = request.bodyToMono(Person.class);
+    Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
     Mono<Person> personMonoExist = personService.getPerson(id);
 
-    return personMono
+    return personDtoMono.log()
+      .map(personMapper::fromDTO)
       .zipWith(personMonoExist, (person, personExist) -> Person.builder()
         .id(personExist.getId())
         .name(person.getName())

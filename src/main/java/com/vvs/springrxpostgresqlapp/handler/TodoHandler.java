@@ -1,5 +1,7 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
+import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
+import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.service.TodoService;
 
@@ -20,6 +22,9 @@ public class TodoHandler {
   @Autowired
   private TodoService todoService;
 
+  @Autowired
+  private TodoMapper todoMapper;
+
   public Mono<ServerResponse> getAllTodos(ServerRequest reqest) {
     return ServerResponse
       .ok()
@@ -30,7 +35,8 @@ public class TodoHandler {
   public Mono<ServerResponse> getTodo(ServerRequest request) {
     Mono<Todo> todoMono = todoService.getTodo(Long.parseLong(request.pathVariable("id")));
 
-    return todoMono.flatMap(todo -> ServerResponse
+    return todoMono
+      .flatMap(todo -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
         .body(BodyInserters.fromValue(todo)))
@@ -38,9 +44,11 @@ public class TodoHandler {
   }
   
   public Mono<ServerResponse> createTodo(ServerRequest request) {
-    Mono<Todo> todoMono = request.bodyToMono(Todo.class);
+    Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
 
-    return todoMono.flatMap(todo -> ServerResponse
+    return todoDTOMono
+      .map(todoMapper::fromDTO)
+      .flatMap(todo -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
         .body(todoService.createTodo(todo), Todo.class))
@@ -50,9 +58,10 @@ public class TodoHandler {
   public Mono<ServerResponse> editTodo(ServerRequest request) {
     Long id = Long.parseLong(request.pathVariable("id"));
     Mono<Todo> todoMonoExist = todoService.getTodo(id);
-    Mono<Todo> todoMono = request.bodyToMono(Todo.class);
+    Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
   
-    return todoMono
+    return todoDTOMono
+      .map(todoMapper::fromDTO)
       .zipWith(todoMonoExist, (todo, todoExist) -> Todo.builder()
         .id(todoExist.getId())
         .name(todo.getName())
