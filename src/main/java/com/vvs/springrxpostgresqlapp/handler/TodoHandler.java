@@ -3,6 +3,7 @@ package com.vvs.springrxpostgresqlapp.handler;
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.model.Todo;
+import com.vvs.springrxpostgresqlapp.service.PersonService;
 import com.vvs.springrxpostgresqlapp.service.TodoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,10 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Component
@@ -24,6 +29,9 @@ public class TodoHandler {
 
   @Autowired
   private TodoMapper todoMapper;
+
+  @Autowired
+  private PersonService personService;
 
   public Mono<ServerResponse> getAllTodos(ServerRequest reqest) {
     return ServerResponse

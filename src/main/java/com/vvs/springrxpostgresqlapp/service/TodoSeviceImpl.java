@@ -1,6 +1,10 @@
 package com.vvs.springrxpostgresqlapp.service;
 
+import java.util.List;
+
+import com.vvs.springrxpostgresqlapp.model.Person;
 import com.vvs.springrxpostgresqlapp.model.Todo;
+import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
 import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +19,9 @@ public class TodoSeviceImpl implements TodoService {
   @Autowired
   private TodoRepository todoRepository;
 
+  @Autowired
+  private PersonRepository personRepository;
+
   @Override
   public Flux<Todo> getAllTodos() {
     return todoRepository.findAll();
@@ -27,6 +34,10 @@ public class TodoSeviceImpl implements TodoService {
 
   @Override
   public Mono<Todo> createTodo(Todo todo) {
+    // Person person = personRepository.findPersonById(todo.getPerson_id());
+    // List<Todo> todos = person.getTodos();
+    // todos.add(todo);
+    // personRepository.save(person);
     return todoRepository.save(todo);
   }
 

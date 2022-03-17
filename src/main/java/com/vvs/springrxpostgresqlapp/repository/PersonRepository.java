@@ -7,5 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface PersonRepository extends ReactiveCrudRepository<Person, Long> {
-  
+  Person findPersonById(Long id);
 }

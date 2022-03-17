@@ -3,6 +3,7 @@ package com.vvs.springrxpostgresqlapp.handler;
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
 import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
 import com.vvs.springrxpostgresqlapp.model.Person;
+import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.service.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -62,7 +63,7 @@ public class PersonHandler {
     Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
     Mono<Person> personMonoExist = personService.getPerson(id);
 
-    return personDtoMono.log()
+    return personDtoMono
       .map(personMapper::fromDTO)
       .zipWith(personMonoExist, (person, personExist) -> Person.builder()
         .id(personExist.getId())
@@ -85,6 +86,15 @@ public class PersonHandler {
       .ok()
       .contentType(APPLICATION_JSON)
       .body(personService.deletePerson(id), Person.class);
+  }
+
+  public Mono<ServerResponse> getTodosById(ServerRequest request) {
+    Long id = Long.parseLong(request.pathVariable("id"));
+
+    return ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(personService.getTodosById(id), Todo.class);
   }
 
 }

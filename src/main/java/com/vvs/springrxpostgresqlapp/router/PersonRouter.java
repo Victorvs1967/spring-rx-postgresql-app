@@ -1,5 +1,6 @@
 package com.vvs.springrxpostgresqlapp.router;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.reactive.function.server.RouterFunction;
@@ -14,16 +15,18 @@ import com.vvs.springrxpostgresqlapp.handler.PersonHandler;
 @Configuration
 public class PersonRouter {
 
-  private String baseLink = "/api/person";
+  @Value("${api.person.link}")
+  private String personLink;
   
   @Bean
   public RouterFunction<ServerResponse> personRouterFunction(PersonHandler personHandler) {
     return RouterFunctions
-      .route(GET(baseLink).and(accept(APPLICATION_JSON)), personHandler::getAllPersons)
-      .andRoute(GET(baseLink.concat("/{id}")).and(accept(APPLICATION_JSON)), personHandler::getPerson)
-      .andRoute(POST(baseLink).and(accept(APPLICATION_JSON)), personHandler::createPerson)
-      .andRoute(PUT(baseLink.concat("/{id}")), personHandler::editPerson)
-      .andRoute(DELETE(baseLink.concat("/{id}")), personHandler::deletePerson);
+      .route(GET(personLink).and(accept(APPLICATION_JSON)), personHandler::getAllPersons)
+      .andRoute(POST(personLink).and(accept(APPLICATION_JSON)), personHandler::createPerson)
+      .andRoute(GET(personLink.concat("/{id}")).and(accept(APPLICATION_JSON)), personHandler::getPerson)
+      .andRoute(PUT(personLink.concat("/{id}")), personHandler::editPerson)
+      .andRoute(DELETE(personLink.concat("/{id}")), personHandler::deletePerson)
+      .andRoute(GET(personLink.concat("/{id}/todos")).and(accept(APPLICATION_JSON)), personHandler::getTodosById);
   }
 
 }

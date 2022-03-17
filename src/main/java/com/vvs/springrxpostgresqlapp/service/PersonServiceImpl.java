@@ -1,7 +1,11 @@
 package com.vvs.springrxpostgresqlapp.service;
 
+import java.util.List;
+
 import com.vvs.springrxpostgresqlapp.model.Person;
+import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
+import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +18,9 @@ public class PersonServiceImpl implements PersonService {
   
   @Autowired
   private PersonRepository personRepository;
+
+  @Autowired
+  private TodoRepository todoRepository;
 
   @Override
   public Flux<Person> getAllPersons() {
@@ -38,6 +45,14 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Mono<Void> deletePerson(Long id) {
     return personRepository.deleteById(id);
+  }
+
+  @Override
+  public Flux<Todo> getTodosById(Long id) {
+
+    return todoRepository.findAll()
+      .filter(todo -> todo.getPerson_id().equals(id))
+      .map(todo -> todo);
   }
 
 }
