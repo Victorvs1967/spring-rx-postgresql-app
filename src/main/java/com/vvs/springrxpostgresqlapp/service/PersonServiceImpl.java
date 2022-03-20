@@ -1,11 +1,9 @@
 package com.vvs.springrxpostgresqlapp.service;
 
-import java.util.List;
-
+import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
+import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
 import com.vvs.springrxpostgresqlapp.model.Person;
-import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
-import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,39 +18,31 @@ public class PersonServiceImpl implements PersonService {
   private PersonRepository personRepository;
 
   @Autowired
-  private TodoRepository todoRepository;
+  private PersonMapper personMapper;
 
   @Override
-  public Flux<Person> getAllPersons() {
-    return personRepository.findAll();
+  public Flux<PersonDTO> getAllPersons() {
+    return personRepository.findAll().map(personMapper::toDTO);
   }
 
   @Override
-  public Mono<Person> getPerson(Long id) {
-    return personRepository.findById(id);
+  public Mono<PersonDTO> getPerson(String id) {
+    return personRepository.findById(id).map(personMapper::toDTO);
   }
 
   @Override
-  public Mono<Person> createPerson(Person person) {
-    return personRepository.save(person);
+  public Mono<PersonDTO> createPerson(Person person) {
+    return personRepository.save(person).map(personMapper::toDTO);
   }
 
   @Override
-  public Mono<Person> editPerson(Person person) {
-    return personRepository.save(person);
+  public Mono<PersonDTO> editPerson(Person person) {
+    return personRepository.save(person).map(personMapper::toDTO);
   }
 
   @Override
-  public Mono<Void> deletePerson(Long id) {
+  public Mono<Void> deletePerson(String id) {
     return personRepository.deleteById(id);
-  }
-
-  @Override
-  public Flux<Todo> getTodosById(Long id) {
-
-    return todoRepository.findAll()
-      .filter(todo -> todo.getPerson_id().equals(id))
-      .map(todo -> todo);
   }
 
 }

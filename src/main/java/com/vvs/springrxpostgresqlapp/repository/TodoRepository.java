@@ -2,10 +2,7 @@ package com.vvs.springrxpostgresqlapp.repository;
 
 import com.vvs.springrxpostgresqlapp.model.Todo;
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-@Repository
-public interface TodoRepository extends ReactiveCrudRepository<Todo, Long> {
-  
+public interface TodoRepository extends ReactiveMongoRepository<Todo, String> {  
 }

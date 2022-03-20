@@ -2,10 +2,7 @@ package com.vvs.springrxpostgresqlapp.repository;
 
 import com.vvs.springrxpostgresqlapp.model.Person;
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
-import org.springframework.stereotype.Repository;
+import org.springframework.data.mongodb.repository.ReactiveMongoRepository;
 
-@Repository
-public interface PersonRepository extends ReactiveCrudRepository<Person, Long> {
-  Person findPersonById(Long id);
+public interface PersonRepository extends ReactiveMongoRepository<Person, String> {
 }

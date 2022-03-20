@@ -3,7 +3,6 @@ package com.vvs.springrxpostgresqlapp.handler;
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.model.Todo;
-import com.vvs.springrxpostgresqlapp.service.PersonService;
 import com.vvs.springrxpostgresqlapp.service.TodoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,9 +15,6 @@ import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Component
@@ -30,9 +26,6 @@ public class TodoHandler {
   @Autowired
   private TodoMapper todoMapper;
 
-  @Autowired
-  private PersonService personService;
-
   public Mono<ServerResponse> getAllTodos(ServerRequest reqest) {
     return ServerResponse
       .ok()
@@ -41,7 +34,7 @@ public class TodoHandler {
   }
   
   public Mono<ServerResponse> getTodo(ServerRequest request) {
-    Mono<Todo> todoMono = todoService.getTodo(Long.parseLong(request.pathVariable("id")));
+    Mono<TodoDTO> todoMono = todoService.getTodo(request.pathVariable("id"));
 
     return todoMono
       .flatMap(todo -> ServerResponse
@@ -59,13 +52,13 @@ public class TodoHandler {
       .flatMap(todo -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
-        .body(todoService.createTodo(todo), Todo.class))
+        .body(todoService.createTodo(todo), TodoDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> editTodo(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
-    Mono<Todo> todoMonoExist = todoService.getTodo(id);
+    String id = request.pathVariable("id");
+    Mono<TodoDTO> todoMonoExist = todoService.getTodo(id);
     Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
   
     return todoDTOMono
@@ -80,12 +73,12 @@ public class TodoHandler {
       .flatMap(todo -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
-        .body(todoService.editTodo(todo), Todo.class))
+        .body(todoService.editTodo(todo), TodoDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
+    String id = request.pathVariable("id");
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)

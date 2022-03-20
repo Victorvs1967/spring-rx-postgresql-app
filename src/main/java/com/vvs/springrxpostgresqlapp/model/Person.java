@@ -3,8 +3,9 @@ package com.vvs.springrxpostgresqlapp.model;
 import java.util.List;
 
 import org.springframework.data.annotation.Id;
-import org.springframework.data.annotation.Transient;
-import org.springframework.data.relational.core.mapping.Table;
+// import org.springframework.data.mongodb.core.mapping.DBRef;
+import org.springframework.data.mongodb.core.mapping.Document;
+import org.springframework.data.mongodb.core.mapping.DocumentReference;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -15,16 +16,16 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table("person")
+@Document("person")
 public class Person {
   
   @Id
-  private Long id;
+  private String id;
   private String name;
   private String email;
   private String password;
 
-  @Transient
+  @DocumentReference
   private List<Todo> todos;
 
 }

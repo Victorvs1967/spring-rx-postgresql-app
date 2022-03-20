@@ -3,7 +3,6 @@ package com.vvs.springrxpostgresqlapp.handler;
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
 import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
 import com.vvs.springrxpostgresqlapp.model.Person;
-import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.service.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +26,7 @@ public class PersonHandler {
   private PersonMapper personMapper;
   
   public Mono<ServerResponse> getAllPersons(ServerRequest request) {
-    Flux<Person> persons = personService.getAllPersons();
+    Flux<PersonDTO> persons = personService.getAllPersons();
 
     return ServerResponse
       .ok()
@@ -36,7 +35,7 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> getPerson(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
+    String id = request.pathVariable("id");
     
     return personService.getPerson(id)
       .flatMap(person -> ServerResponse
@@ -59,9 +58,9 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> editPerson(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
+    String id = request.pathVariable("id");
     Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
-    Mono<Person> personMonoExist = personService.getPerson(id);
+    Mono<PersonDTO> personMonoExist = personService.getPerson(id);
 
     return personDtoMono
       .map(personMapper::fromDTO)
@@ -80,21 +79,12 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> deletePerson(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
+    String id = request.pathVariable("id");
 
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
       .body(personService.deletePerson(id), Person.class);
-  }
-
-  public Mono<ServerResponse> getTodosById(ServerRequest request) {
-    Long id = Long.parseLong(request.pathVariable("id"));
-
-    return ServerResponse
-        .ok()
-        .contentType(APPLICATION_JSON)
-        .body(personService.getTodosById(id), Todo.class);
   }
 
 }

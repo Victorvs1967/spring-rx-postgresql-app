@@ -1,10 +1,8 @@
 package com.vvs.springrxpostgresqlapp.service;
 
-import java.util.List;
-
-import com.vvs.springrxpostgresqlapp.model.Person;
+import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
+import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.model.Todo;
-import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
 import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,34 +18,39 @@ public class TodoSeviceImpl implements TodoService {
   private TodoRepository todoRepository;
 
   @Autowired
-  private PersonRepository personRepository;
+  private TodoMapper todoMapper;
 
   @Override
-  public Flux<Todo> getAllTodos() {
-    return todoRepository.findAll();
+  public Flux<TodoDTO> getAllTodos() {
+    return todoRepository.findAll()
+      .map(todoMapper::toDTO);
   }
 
   @Override
-  public Mono<Todo> getTodo(Long id) {
-    return todoRepository.findById(id);
+  public Mono<TodoDTO> getTodo(String id) {
+    return todoRepository.findById(id)
+      .map(todoMapper::toDTO);
   }
 
   @Override
-  public Mono<Todo> createTodo(Todo todo) {
-    // Person person = personRepository.findPersonById(todo.getPerson_id());
-    // List<Todo> todos = person.getTodos();
-    // todos.add(todo);
-    // personRepository.save(person);
-    return todoRepository.save(todo);
+  public Mono<TodoDTO> createTodo(Todo todo) {
+    return Mono.fromSupplier(() -> {
+        todoRepository
+            .save(todo)
+            .subscribe();
+        return todo;
+      })
+      .map(todoMapper::toDTO);
   }
 
   @Override
-  public Mono<Todo> editTodo(Todo todo) {
-    return todoRepository.save(todo);
+  public Mono<TodoDTO> editTodo(Todo todo) {
+    return todoRepository.save(todo)
+      .map(todoMapper::toDTO);
   }
 
   @Override
-  public Mono<Void> deleteTodo(Long id) {
+  public Mono<Void> deleteTodo(String id) {
     return todoRepository.deleteById(id);
   }
 

@@ -3,7 +3,6 @@ package com.vvs.springrxpostgresqlapp.dto;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collector;
 
 import com.vvs.springrxpostgresqlapp.model.Todo;
 
@@ -19,7 +18,7 @@ import reactor.core.publisher.Flux;
 @AllArgsConstructor
 public class PersonDTO {
   
-  private Long id;
+  private String id;
   private String name;
   private String email;
   private String password;
