@@ -33,19 +33,20 @@ public class TodoSeviceImpl implements TodoService {
   }
 
   @Override
-  public Mono<TodoDTO> createTodo(Todo todo) {
-    return Mono.fromSupplier(() -> {
-        todoRepository
-            .save(todo)
-            .subscribe();
-        return todo;
-      })
+  public Mono<TodoDTO> createTodo(TodoDTO todoDTO) {
+    return Mono.just(todoDTO)
+      .map(todoMapper::fromDTO)
+      .flatMap(todoRepository::save)
       .map(todoMapper::toDTO);
   }
 
   @Override
-  public Mono<TodoDTO> editTodo(Todo todo) {
-    return todoRepository.save(todo)
+  public Mono<TodoDTO> editTodo(TodoDTO todoDTO, String id) {
+    return todoRepository.findById(id)
+      .flatMap(todo -> Mono.just(todoDTO)
+        .map(todoMapper::fromDTO)
+        .doOnNext(t -> t.setId(id)))
+      .flatMap(todoRepository::save)
       .map(todoMapper::toDTO);
   }
 

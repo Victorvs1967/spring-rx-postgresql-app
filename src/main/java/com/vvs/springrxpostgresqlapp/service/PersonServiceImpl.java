@@ -31,13 +31,21 @@ public class PersonServiceImpl implements PersonService {
   }
 
   @Override
-  public Mono<PersonDTO> createPerson(Person person) {
-    return personRepository.save(person).map(personMapper::toDTO);
+  public Mono<PersonDTO> createPerson(PersonDTO personDTO) {
+    return Mono.just(personDTO)
+      .map(personMapper::fromDTO)
+      .flatMap(personRepository::save)
+      .map(personMapper::toDTO);
   }
 
   @Override
-  public Mono<PersonDTO> editPerson(Person person) {
-    return personRepository.save(person).map(personMapper::toDTO);
+  public Mono<PersonDTO> editPerson(PersonDTO personDTO, String id) {
+    return personRepository.findById(id)
+      .flatMap(person -> Mono.just(personDTO)
+        .map(personMapper::fromDTO)
+        .doOnNext(p -> p.setId(id)))
+      .flatMap(personRepository::save)
+      .map(personMapper::toDTO);
   }
 
   @Override

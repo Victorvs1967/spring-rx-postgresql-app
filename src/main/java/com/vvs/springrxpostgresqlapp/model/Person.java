@@ -24,7 +24,6 @@ public class Person {
   private String email;
   private String password;
 
-  @DBRef
-  private List<String> todoIds;
+  private List<String> todosIds;
 
 }

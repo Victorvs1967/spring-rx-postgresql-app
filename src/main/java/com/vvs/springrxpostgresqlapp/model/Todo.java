@@ -29,7 +29,6 @@ public class Todo {
   @CreatedDate
   private LocalDate date_added;
 
-  @DBRef
   private String personId;
 
 }

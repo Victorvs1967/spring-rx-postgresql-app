@@ -1,7 +1,6 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
-import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.service.TodoService;
 
@@ -22,9 +21,6 @@ public class TodoHandler {
   
   @Autowired
   private TodoService todoService;
-
-  @Autowired
-  private TodoMapper todoMapper;
 
   public Mono<ServerResponse> getAllTodos(ServerRequest reqest) {
     return ServerResponse
@@ -48,7 +44,6 @@ public class TodoHandler {
     Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
 
     return todoDTOMono
-      .map(todoMapper::fromDTO)
       .flatMap(todo -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
@@ -58,22 +53,13 @@ public class TodoHandler {
 
   public Mono<ServerResponse> editTodo(ServerRequest request) {
     String id = request.pathVariable("id");
-    Mono<TodoDTO> todoMonoExist = todoService.getTodo(id);
     Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
   
     return todoDTOMono
-      .map(todoMapper::fromDTO)
-      .zipWith(todoMonoExist, (todo, todoExist) -> Todo.builder()
-        .id(todoExist.getId())
-        .name(todo.getName())
-        .due_date(todo.getDue_date())
-        .date_added(todo.getDate_added())
-        .personId(todo.getPersonId())
-        .build())
-      .flatMap(todo -> ServerResponse
-      .ok()
-      .contentType(APPLICATION_JSON)
-      .body(todoService.editTodo(todo), TodoDTO.class))
+      .flatMap(todoDTO -> ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(todoService.editTodo(todoDTO, id), TodoDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 

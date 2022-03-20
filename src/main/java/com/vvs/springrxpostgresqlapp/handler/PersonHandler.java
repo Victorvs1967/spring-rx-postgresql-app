@@ -49,32 +49,22 @@ public class PersonHandler {
     Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
 
     return personDtoMono
-      .map(personMapper::fromDTO)
       .flatMap(person -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
-        .body(personService.createPerson(person), Person.class))
+        .body(personService.createPerson(person), PersonDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> editPerson(ServerRequest request) {
     String id = request.pathVariable("id");
     Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
-    Mono<PersonDTO> personMonoExist = personService.getPerson(id);
 
     return personDtoMono
-      .map(personMapper::fromDTO)
-      .zipWith(personMonoExist, (person, personExist) -> Person.builder()
-        .id(personExist.getId())
-        .name(person.getName())
-        .email(person.getEmail())
-        .password(person.getPassword())
-        .todoIds(person.getTodoIds())
-        .build())
-      .flatMap(person -> ServerResponse
+      .flatMap(personDTO -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
-        .body(personService.createPerson(person), Person.class))
+        .body(personService.editPerson(personDTO, id), PersonDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
