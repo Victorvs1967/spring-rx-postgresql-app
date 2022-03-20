@@ -68,12 +68,12 @@ public class TodoHandler {
         .name(todo.getName())
         .due_date(todo.getDue_date())
         .date_added(todo.getDate_added())
-        .person_id(todo.getPerson_id())
+        .personId(todo.getPersonId())
         .build())
       .flatMap(todo -> ServerResponse
-        .ok()
-        .contentType(APPLICATION_JSON)
-        .body(todoService.editTodo(todo), TodoDTO.class))
+      .ok()
+      .contentType(APPLICATION_JSON)
+      .body(todoService.editTodo(todo), TodoDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 

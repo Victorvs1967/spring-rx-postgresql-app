@@ -69,7 +69,7 @@ public class PersonHandler {
         .name(person.getName())
         .email(person.getEmail())
         .password(person.getPassword())
-        .todos(person.getTodos())
+        .todoIds(person.getTodoIds())
         .build())
       .flatMap(person -> ServerResponse
         .ok()
