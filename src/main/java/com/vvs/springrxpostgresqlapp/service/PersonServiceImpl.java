@@ -2,7 +2,6 @@ package com.vvs.springrxpostgresqlapp.service;
 
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
 import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
-import com.vvs.springrxpostgresqlapp.model.Person;
 import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -51,6 +50,11 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Mono<Void> deletePerson(String id) {
     return personRepository.deleteById(id);
+  }
+
+  @Override
+  public Mono<Void> deleteAllPerson() {
+    return personRepository.deleteAll();
   }
 
 }

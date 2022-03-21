@@ -1,8 +1,6 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
-import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
-import com.vvs.springrxpostgresqlapp.model.Person;
 import com.vvs.springrxpostgresqlapp.service.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,8 +20,6 @@ public class PersonHandler {
 
   @Autowired
   private PersonService personService;
-  @Autowired
-  private PersonMapper personMapper;
   
   public Mono<ServerResponse> getAllPersons(ServerRequest request) {
     Flux<PersonDTO> persons = personService.getAllPersons();
@@ -31,13 +27,11 @@ public class PersonHandler {
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(persons, Person.class);
+      .body(persons, PersonDTO.class);
   }
 
-  public Mono<ServerResponse> getPerson(ServerRequest request) {
-    String id = request.pathVariable("id");
-    
-    return personService.getPerson(id)
+  public Mono<ServerResponse> getPerson(ServerRequest request) {    
+    return personService.getPerson(request.pathVariable("id"))
       .flatMap(person -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
@@ -46,9 +40,7 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> createPerson(ServerRequest request) {
-    Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
-
-    return personDtoMono
+    return request.bodyToMono(PersonDTO.class)
       .flatMap(person -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
@@ -57,24 +49,26 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> editPerson(ServerRequest request) {
-    String id = request.pathVariable("id");
-    Mono<PersonDTO> personDtoMono = request.bodyToMono(PersonDTO.class);
-
-    return personDtoMono
+    return request.bodyToMono(PersonDTO.class)
       .flatMap(personDTO -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
-        .body(personService.editPerson(personDTO, id), PersonDTO.class))
+        .body(personService.editPerson(personDTO, request.pathVariable("id")), PersonDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> deletePerson(ServerRequest request) {
-    String id = request.pathVariable("id");
-
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(personService.deletePerson(id), Person.class);
+      .body(personService.deletePerson(request.pathVariable("id")), PersonDTO.class);
+  }
+
+  public Mono<ServerResponse> deleteAllPerson(ServerRequest request) {
+    return ServerResponse
+      .ok()
+      .contentType(APPLICATION_JSON)
+      .body(personService.deleteAllPerson(), PersonDTO.class);
   }
 
 }

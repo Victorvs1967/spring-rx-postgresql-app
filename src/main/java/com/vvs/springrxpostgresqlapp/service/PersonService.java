@@ -12,5 +12,6 @@ public interface PersonService {
   public Mono<PersonDTO> createPerson(PersonDTO personDTO);
   public Mono<PersonDTO> editPerson(PersonDTO personDTO, String id);
   public Mono<Void> deletePerson(String id);
+  public Mono<Void> deleteAllPerson();
 
 }

@@ -1,7 +1,6 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
-import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.service.TodoService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,12 +25,10 @@ public class TodoHandler {
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(todoService.getAllTodos(), Todo.class);
+      .body(todoService.getAllTodos(), TodoDTO.class);
   }
   
   public Mono<ServerResponse> getTodo(ServerRequest request) {
-    // Mono<TodoDTO> todoMono = todoService.getTodo(request.pathVariable("id"));
-
     return todoService
       .getTodo(request.pathVariable("id"))
       .flatMap(todo -> ServerResponse
@@ -42,8 +39,6 @@ public class TodoHandler {
   }
   
   public Mono<ServerResponse> createTodo(ServerRequest request) {
-    // Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
-
     return request.bodyToMono(TodoDTO.class)
       .flatMap(todo -> ServerResponse
         .status(CREATED)
@@ -53,9 +48,6 @@ public class TodoHandler {
   }
 
   public Mono<ServerResponse> editTodo(ServerRequest request) {
-    // String id = request.pathVariable("id");
-    // Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
-  
     return request.bodyToMono(TodoDTO.class)
       .flatMap(todoDTO -> ServerResponse
         .ok()
@@ -65,11 +57,17 @@ public class TodoHandler {
   }
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
-    // String id = request.pathVariable("id");
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(todoService.deleteTodo(request.pathVariable("id")), Todo.class);
+      .body(todoService.deleteTodo(request.pathVariable("id")), TodoDTO.class);
+  }
+
+  public Mono<ServerResponse> deleteAllTodo(ServerRequest request) {
+    return ServerResponse
+      .ok()
+      .contentType(APPLICATION_JSON)
+      .body(todoService.deleteAllTodo(), TodoDTO.class);
   }
 
 }

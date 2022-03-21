@@ -25,7 +25,8 @@ public class TodoRouter {
       .andRoute(POST(todoLink).and(accept(APPLICATION_JSON)), todoHandler::createTodo)
       .andRoute(GET(todoLink.concat("/{id}")).and(accept(APPLICATION_JSON)), todoHandler::getTodo)
       .andRoute(PUT(todoLink.concat("/{id}")).and(accept(APPLICATION_JSON)), todoHandler::editTodo)
-      .andRoute(DELETE(todoLink.concat("/{id}")).and(accept(APPLICATION_JSON)), todoHandler::deleteTodo);
+      .andRoute(DELETE(todoLink.concat("/{id}")).and(accept(APPLICATION_JSON)), todoHandler::deleteTodo)
+      .andRoute(DELETE(todoLink).and(accept(APPLICATION_JSON)), todoHandler::deleteAllTodo);
   }
   
 }

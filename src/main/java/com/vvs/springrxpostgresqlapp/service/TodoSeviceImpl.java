@@ -1,5 +1,7 @@
 package com.vvs.springrxpostgresqlapp.service;
 
+import java.time.LocalDate;
+
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
@@ -35,6 +37,10 @@ public class TodoSeviceImpl implements TodoService {
   public Mono<TodoDTO> createTodo(TodoDTO todoDTO) {
     return Mono.just(todoDTO)
       .map(todoMapper::fromDTO)
+      .doOnNext(t -> {
+        t.setDate_added(LocalDate.now());
+        if (todoDTO.getDue_date().isBefore(t.getDate_added())) t.setDue_date(t.getDate_added());
+      })
       .flatMap(todoRepository::save)
       .map(todoMapper::toDTO);
   }
@@ -44,7 +50,11 @@ public class TodoSeviceImpl implements TodoService {
     return todoRepository.findById(id)
       .flatMap(todo -> Mono.just(todoDTO)
         .map(todoMapper::fromDTO)
-        .doOnNext(t -> t.setId(id)))
+        .doOnNext(t -> {
+          t.setId(id);
+          t.setDate_added(todo.getDate_added());
+          if (todoDTO.getDue_date().isBefore(t.getDate_added())) t.setDue_date(t.getDate_added());
+        }))
       .flatMap(todoRepository::save)
       .map(todoMapper::toDTO);
   }
@@ -52,6 +62,11 @@ public class TodoSeviceImpl implements TodoService {
   @Override
   public Mono<Void> deleteTodo(String id) {
     return todoRepository.deleteById(id);
+  }
+
+  @Override
+  public Mono<Void> deleteAllTodo() {
+    return todoRepository.deleteAll();
   }
 
 }

@@ -12,4 +12,5 @@ public interface TodoService {
   public Mono<TodoDTO> createTodo(TodoDTO todoDTO);
   public Mono<TodoDTO> editTodo(TodoDTO todoDTO, String id);
   public Mono<Void> deleteTodo(String id);
+  public Mono<Void> deleteAllTodo();
 }
