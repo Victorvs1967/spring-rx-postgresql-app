@@ -12,6 +12,7 @@ public class TodoMapperImpl implements TodoMapper {
   @Override
   public Todo fromDTO(TodoDTO todoDTO) {
     Todo todo = new Todo();
+    todoDTO.setDate_added(todo.getDate_added());
     BeanUtils.copyProperties(todoDTO, todo);
     return todo;
   }

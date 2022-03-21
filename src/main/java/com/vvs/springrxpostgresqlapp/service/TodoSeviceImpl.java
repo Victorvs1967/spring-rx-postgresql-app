@@ -2,7 +2,6 @@ package com.vvs.springrxpostgresqlapp.service;
 
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
-import com.vvs.springrxpostgresqlapp.model.Todo;
 import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;

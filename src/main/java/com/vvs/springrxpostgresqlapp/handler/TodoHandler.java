@@ -30,9 +30,10 @@ public class TodoHandler {
   }
   
   public Mono<ServerResponse> getTodo(ServerRequest request) {
-    Mono<TodoDTO> todoMono = todoService.getTodo(request.pathVariable("id"));
+    // Mono<TodoDTO> todoMono = todoService.getTodo(request.pathVariable("id"));
 
-    return todoMono
+    return todoService
+      .getTodo(request.pathVariable("id"))
       .flatMap(todo -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
@@ -41,9 +42,9 @@ public class TodoHandler {
   }
   
   public Mono<ServerResponse> createTodo(ServerRequest request) {
-    Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
+    // Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
 
-    return todoDTOMono
+    return request.bodyToMono(TodoDTO.class)
       .flatMap(todo -> ServerResponse
         .status(CREATED)
         .contentType(APPLICATION_JSON)
@@ -52,23 +53,23 @@ public class TodoHandler {
   }
 
   public Mono<ServerResponse> editTodo(ServerRequest request) {
-    String id = request.pathVariable("id");
-    Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
+    // String id = request.pathVariable("id");
+    // Mono<TodoDTO> todoDTOMono = request.bodyToMono(TodoDTO.class);
   
-    return todoDTOMono
+    return request.bodyToMono(TodoDTO.class)
       .flatMap(todoDTO -> ServerResponse
         .ok()
         .contentType(APPLICATION_JSON)
-        .body(todoService.editTodo(todoDTO, id), TodoDTO.class))
+        .body(todoService.editTodo(todoDTO, request.pathVariable("id")), TodoDTO.class))
       .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
-    String id = request.pathVariable("id");
+    // String id = request.pathVariable("id");
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(todoService.deleteTodo(id), Todo.class);
+      .body(todoService.deleteTodo(request.pathVariable("id")), Todo.class);
   }
 
 }
