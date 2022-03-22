@@ -1,8 +1,11 @@
 package com.vvs.springrxpostgresqlapp.service;
 
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
+import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
+import com.vvs.springrxpostgresqlapp.mapper.TodoMapper;
 import com.vvs.springrxpostgresqlapp.repository.PersonRepository;
+import com.vvs.springrxpostgresqlapp.repository.TodoRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +20,13 @@ public class PersonServiceImpl implements PersonService {
   private PersonRepository personRepository;
 
   @Autowired
+  private TodoRepository todoRepository;
+
+  @Autowired
   private PersonMapper personMapper;
+
+  @Autowired
+  private TodoMapper todoMapper;
 
   @Override
   public Flux<PersonDTO> getAllPersons() {
@@ -55,6 +64,14 @@ public class PersonServiceImpl implements PersonService {
   @Override
   public Mono<Void> deleteAllPerson() {
     return personRepository.deleteAll();
+  }
+
+  @Override
+  public Flux<TodoDTO> getAllPersonTodos(String id) {
+    return personRepository.findById(id)
+      .flatMapIterable(person -> person.getTodosIds())
+      .flatMap(todoRepository::findById)
+      .map(todoMapper::toDTO);
   }
 
 }

@@ -1,6 +1,7 @@
 package com.vvs.springrxpostgresqlapp.handler;
 
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
+import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.service.PersonService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -69,6 +70,14 @@ public class PersonHandler {
       .ok()
       .contentType(APPLICATION_JSON)
       .body(personService.deleteAllPerson(), PersonDTO.class);
+  }
+
+  public Mono<ServerResponse> getAllPersonTodos(ServerRequest request) {
+    Flux<TodoDTO> todos = personService.getAllPersonTodos(request.pathVariable("id"));
+    return ServerResponse
+            .ok()
+            .contentType(APPLICATION_JSON)
+            .body(todos, TodoDTO.class);
   }
 
 }
