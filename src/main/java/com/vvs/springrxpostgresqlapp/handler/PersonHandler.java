@@ -14,6 +14,9 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
+
+import java.time.LocalDate;
+
 import static org.springframework.http.HttpStatus.CREATED;
 
 @Component
@@ -74,6 +77,14 @@ public class PersonHandler {
 
   public Mono<ServerResponse> getAllPersonTodos(ServerRequest request) {
     Flux<TodoDTO> todos = personService.getAllPersonTodos(request.pathVariable("id"));
+    return ServerResponse
+            .ok()
+            .contentType(APPLICATION_JSON)
+            .body(todos, TodoDTO.class);
+  }
+
+  public Mono<ServerResponse> getPersonTodosBefore(ServerRequest request) {
+    Flux<TodoDTO> todos = personService.getPersonTodosBefore(request.pathVariable("id"), LocalDate.parse(request.pathVariable("date")));
     return ServerResponse
             .ok()
             .contentType(APPLICATION_JSON)

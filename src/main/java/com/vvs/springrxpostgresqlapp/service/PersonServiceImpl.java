@@ -1,5 +1,7 @@
 package com.vvs.springrxpostgresqlapp.service;
 
+import java.time.LocalDate;
+
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 import com.vvs.springrxpostgresqlapp.mapper.PersonMapper;
@@ -18,13 +20,10 @@ public class PersonServiceImpl implements PersonService {
   
   @Autowired
   private PersonRepository personRepository;
-
   @Autowired
   private TodoRepository todoRepository;
-
   @Autowired
   private PersonMapper personMapper;
-
   @Autowired
   private TodoMapper todoMapper;
 
@@ -71,6 +70,15 @@ public class PersonServiceImpl implements PersonService {
     return personRepository.findById(id)
       .flatMapIterable(person -> person.getTodosIds())
       .flatMap(todoRepository::findById)
+      .map(todoMapper::toDTO);
+  }
+
+  @Override
+  public Flux<TodoDTO> getPersonTodosBefore(String id, LocalDate date) {
+    return personRepository.findById(id)
+      .flatMapIterable(person -> person.getTodosIds())
+      .flatMap(todoRepository::findById).log()
+      .filter(todo -> todo.getDue_date().isBefore(date))
       .map(todoMapper::toDTO);
   }
 

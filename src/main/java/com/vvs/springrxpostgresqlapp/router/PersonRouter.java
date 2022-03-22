@@ -27,7 +27,8 @@ public class PersonRouter {
       .andRoute(PUT(personLink.concat("/{id}")), personHandler::editPerson)
       .andRoute(DELETE(personLink.concat("/{id}")), personHandler::deletePerson)
       .andRoute(DELETE(personLink), personHandler::deleteAllPerson)
-      .andRoute(GET(personLink.concat("/{id}/todos")), personHandler::getAllPersonTodos);
+      .andRoute(GET(personLink.concat("/{id}/todos")), personHandler::getAllPersonTodos)
+      .andRoute(GET(personLink.concat("/{id}/todos/{date}")), personHandler::getPersonTodosBefore);
   }
 
 }

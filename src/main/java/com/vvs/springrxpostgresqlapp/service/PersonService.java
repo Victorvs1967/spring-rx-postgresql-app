@@ -1,5 +1,7 @@
 package com.vvs.springrxpostgresqlapp.service;
 
+import java.time.LocalDate;
+
 import com.vvs.springrxpostgresqlapp.dto.PersonDTO;
 import com.vvs.springrxpostgresqlapp.dto.TodoDTO;
 
@@ -15,5 +17,6 @@ public interface PersonService {
   public Mono<Void> deletePerson(String id);
   public Mono<Void> deleteAllPerson();
   public Flux<TodoDTO> getAllPersonTodos(String id);
+  public Flux<TodoDTO> getPersonTodosBefore(String id, LocalDate date);
 
 }

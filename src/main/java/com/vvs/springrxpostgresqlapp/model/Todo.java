@@ -2,6 +2,8 @@ package com.vvs.springrxpostgresqlapp.model;
 
 import java.time.LocalDate;
 
+import com.mongodb.lang.NonNull;
+
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.annotation.CreatedDate;
@@ -20,6 +22,7 @@ public class Todo {
 
   @Id
   private String id;
+  @NonNull
   private String name;
   private LocalDate due_date;
 
