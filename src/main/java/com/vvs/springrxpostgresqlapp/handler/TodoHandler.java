@@ -57,10 +57,12 @@ public class TodoHandler {
   }
 
   public Mono<ServerResponse> deleteTodo(ServerRequest request) {
-    return ServerResponse
-      .ok()
-      .contentType(APPLICATION_JSON)
-      .body(todoService.deleteTodo(request.pathVariable("id")), TodoDTO.class);
+    return todoService.deleteTodo(request.pathVariable("id"))
+      .flatMap(todo -> ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(todo, TodoDTO.class))
+      .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> deleteAllTodo(ServerRequest request) {

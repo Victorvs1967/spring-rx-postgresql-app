@@ -10,7 +10,6 @@ import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON;
@@ -26,12 +25,10 @@ public class PersonHandler {
   private PersonService personService;
   
   public Mono<ServerResponse> getAllPersons(ServerRequest request) {
-    Flux<PersonDTO> persons = personService.getAllPersons();
-
     return ServerResponse
       .ok()
       .contentType(APPLICATION_JSON)
-      .body(persons, PersonDTO.class);
+      .body(personService.getAllPersons(), PersonDTO.class);
   }
 
   public Mono<ServerResponse> getPerson(ServerRequest request) {    
@@ -62,10 +59,12 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> deletePerson(ServerRequest request) {
-    return ServerResponse
-      .ok()
-      .contentType(APPLICATION_JSON)
-      .body(personService.deletePerson(request.pathVariable("id")), PersonDTO.class);
+    return personService.deletePerson(request.pathVariable("id"))
+      .flatMap(person -> ServerResponse
+        .ok()
+        .contentType(APPLICATION_JSON)
+        .body(person, PersonDTO.class))
+      .switchIfEmpty(ServerResponse.badRequest().build());
   }
 
   public Mono<ServerResponse> deleteAllPerson(ServerRequest request) {
@@ -76,19 +75,19 @@ public class PersonHandler {
   }
 
   public Mono<ServerResponse> getAllPersonTodos(ServerRequest request) {
-    Flux<TodoDTO> todos = personService.getAllPersonTodos(request.pathVariable("id"));
     return ServerResponse
-            .ok()
-            .contentType(APPLICATION_JSON)
-            .body(todos, TodoDTO.class);
+      .ok()
+      .contentType(APPLICATION_JSON)
+      .body(personService.getAllPersonTodos(request.pathVariable("id"))
+        .switchIfEmpty(ServerResponse.badRequest().build().cast(TodoDTO.class)), TodoDTO.class);
   }
 
   public Mono<ServerResponse> getPersonTodosBefore(ServerRequest request) {
-    Flux<TodoDTO> todos = personService.getPersonTodosBefore(request.pathVariable("id"), LocalDate.parse(request.pathVariable("date")));
     return ServerResponse
-            .ok()
-            .contentType(APPLICATION_JSON)
-            .body(todos, TodoDTO.class);
+      .ok()
+      .contentType(APPLICATION_JSON)
+      .body(personService.getPersonTodosBefore(request.pathVariable("id"), LocalDate.parse(request.pathVariable("date")))
+        .switchIfEmpty(ServerResponse.badRequest().build().cast(TodoDTO.class)), TodoDTO.class);
   }
 
 }
